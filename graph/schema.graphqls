@@ -2,15 +2,26 @@
 #
 # https://gqlgen.com/getting-started/
 
+enum TodoStatus {
+  NOT_YET
+  DONE
+}
+
 type Todo {
-  id: ID!
-  text: String!
-  done: Boolean!
-  user: User!
+  id: Int!
+  user_id: Int!
+  name: String!
+  status: TodoStatus!
+}
+
+input TodoWithoutID {
+  user_id: Int!
+  name: String!
+  status: TodoStatus!
 }
 
 type User {
-  id: ID!
+  id: Int!
   name: String!
 }
 
@@ -18,11 +29,6 @@ type Query {
   todos: [Todo!]!
 }
 
-input NewTodo {
-  text: String!
-  userId: String!
-}
-
 type Mutation {
-  createTodo(input: NewTodo!): Todo!
+  createTodo(input: TodoWithoutID!): Todo!
 }

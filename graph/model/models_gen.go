@@ -2,19 +2,67 @@
 
 package model
 
-type NewTodo struct {
-	Text   string `json:"text"`
-	UserID string `json:"userId"`
-}
+import (
+	"fmt"
+	"io"
+	"strconv"
+)
 
 type Todo struct {
-	ID   string `json:"id"`
-	Text string `json:"text"`
-	Done bool   `json:"done"`
-	User *User  `json:"user"`
+	ID     int        `json:"id"`
+	UserID int        `json:"user_id"`
+	Name   string     `json:"name"`
+	Status TodoStatus `json:"status"`
+}
+
+type TodoWithoutID struct {
+	UserID int        `json:"user_id"`
+	Name   string     `json:"name"`
+	Status TodoStatus `json:"status"`
 }
 
 type User struct {
-	ID   string `json:"id"`
+	ID   int    `json:"id"`
 	Name string `json:"name"`
+}
+
+type TodoStatus string
+
+const (
+	TodoStatusNotYet TodoStatus = "NOT_YET"
+	TodoStatusDone   TodoStatus = "DONE"
+)
+
+var AllTodoStatus = []TodoStatus{
+	TodoStatusNotYet,
+	TodoStatusDone,
+}
+
+func (e TodoStatus) IsValid() bool {
+	switch e {
+	case TodoStatusNotYet, TodoStatusDone:
+		return true
+	}
+	return false
+}
+
+func (e TodoStatus) String() string {
+	return string(e)
+}
+
+func (e *TodoStatus) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = TodoStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid TodoStatus", str)
+	}
+	return nil
+}
+
+func (e TodoStatus) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
 }

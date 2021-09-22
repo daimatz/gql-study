@@ -5,18 +5,17 @@ package graph
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/daimatz/gql-study/graph/generated"
 	"github.com/daimatz/gql-study/graph/model"
 )
 
-func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *mutationResolver) CreateTodo(ctx context.Context, input model.TodoWithoutID) (*model.Todo, error) {
+	return r.Dba.CreateTodo(input)
 }
 
 func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
-	panic(fmt.Errorf("not implemented"))
+	return r.Dba.ListTodos()
 }
 
 // Mutation returns generated.MutationResolver implementation.
