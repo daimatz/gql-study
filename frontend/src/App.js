@@ -1,25 +1,52 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from 'react';
+import axios from 'axios';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+const TITLE = 'TODO';
+
+const api = axios.create({
+  baseURL: 'http://localhost:8080/query',
+});
+
+const QUERY_TODOS = `
+  {
+    todos {
+      id
+      name
+    }
+  }
+`;
+
+class App extends Component {
+  state = {
+    todos: [],
+    errors: [],
+  };
+
+  componentDidMount() {
+    this.refreshTodos();
+  }
+
+  refreshTodos() {
+    api.post('', {
+      query: QUERY_TODOS,
+    }).then(res => {
+      this.setState({ todos: res.data.data.todos });
+    });
+  }
+
+  render() {
+    return (
+      <div>
+        <h1>{TITLE}</h1>
+
+        <ul>
+        {this.state.todos.map(todo => (
+          <li key={todo.id}>{todo.name}</li>
+        ))}
+        </ul>
+      </div>
+    );
+  }
+};
 
 export default App;

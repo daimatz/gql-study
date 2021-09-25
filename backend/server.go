@@ -10,6 +10,7 @@ import (
 	"github.com/daimatz/gql-study/dba"
 	"github.com/daimatz/gql-study/graph"
 	"github.com/daimatz/gql-study/graph/generated"
+	"github.com/rs/cors"
 )
 
 const defaultPort = "8080"
@@ -21,16 +22,22 @@ func main() {
 	}
 
 	dba := dba.DBA{}
+	dba.Open()
+	defer dba.Close()
+
 	resolver := graph.Resolver{
 		Dba: &dba,
 	}
 
-	dba.Open()
-	defer dba.Close()
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &resolver}))
 
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:3000"},
+		AllowCredentials: true,
+	})
+
 	http.Handle("/playground", playground.Handler("GraphQL playground", "/query"))
-	http.Handle("/query", srv)
+	http.Handle("/query", c.Handler(srv))
 
 	log.Printf("connect to http://localhost:%s/playground for GraphQL playground", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
