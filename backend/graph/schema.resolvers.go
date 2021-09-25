@@ -14,6 +14,10 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input model.TodoWitho
 	return r.Dba.CreateTodo(input)
 }
 
+func (r *mutationResolver) SetStatus(ctx context.Context, id int, status *model.TodoStatus) (*model.Todo, error) {
+	return r.Dba.SetStatus(id, status)
+}
+
 func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
 	return r.Dba.ListTodos()
 }

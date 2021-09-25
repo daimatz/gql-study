@@ -65,6 +65,58 @@ func (db *DBA) CreateTodo(input model.TodoWithoutID) (*model.Todo, error) {
 	}, nil
 }
 
+func (db *DBA) SetStatus(id int, status *model.TodoStatus) (*model.Todo, error) {
+	if db.conn == nil {
+		return nil, fmt.Errorf("connection is empty")
+	}
+	var withoutID model.TodoWithoutID
+	for {
+		ps, err := db.conn.Prepare("SELECT json FROM todo WHERE id = ?")
+		if err != nil {
+			return nil, err
+		}
+		res, err := ps.Query(id)
+		if err != nil {
+			return nil, err
+		}
+
+		res.Next()
+		var str string
+		if err := res.Scan(&str); err != nil {
+			return nil, err
+		}
+		if err := json.Unmarshal([]byte(str), &withoutID); err != nil {
+			return nil, err
+		}
+		withoutID.Status = *status
+		js, err := json.Marshal(withoutID)
+		if err != nil {
+			return nil, err
+		}
+		ps2, err := db.conn.Prepare("UPDATE todo SET json = ? WHERE id = ? AND json = ?")
+		if err != nil {
+			return nil, err
+		}
+		res2, err := ps2.Exec(js, id, str)
+		if err != nil {
+			return nil, err
+		}
+		rows, err := res2.RowsAffected()
+		if err != nil {
+			return nil, err
+		}
+		if rows == 1 {
+			break
+		}
+	}
+	return &model.Todo{
+		ID:     id,
+		UserID: withoutID.UserID,
+		Name:   withoutID.Name,
+		Status: withoutID.Status,
+	}, nil
+}
+
 func (db *DBA) ListTodos() ([]*model.Todo, error) {
 	if db.conn == nil {
 		return nil, fmt.Errorf("connection is empty")

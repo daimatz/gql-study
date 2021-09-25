@@ -31,6 +31,14 @@ const QUERY_CREATE = `
   }
 `;
 
+const QUERY_SET_STATUS = `
+  mutation($id: Int!, $status: TodoStatus!) {
+    setStatus(id: $id, status: $status) {
+      id
+    }
+  }
+`;
+
 const TodoList = ({
   todo,
   onClickDone,
@@ -67,9 +75,25 @@ class App extends Component {
   }
 
   onClickDone(id) {
+    api.post('', {
+      query: QUERY_SET_STATUS,
+      variables: { id, status: 'DONE' },
+    }).then(res => {
+      this.setState(s => ({
+        todos: s.todos.map(todo => todo.id === id ? Object.assign(todo, { status: 'DONE' }) : todo)
+      }));
+    });
   }
 
   onClickUndone(id) {
+    api.post('', {
+      query: QUERY_SET_STATUS,
+      variables: { id, status: 'NOT_YET' },
+    }).then(res => {
+      this.setState(s => ({
+        todos: s.todos.map(todo => todo.id === id ? Object.assign(todo, { status: 'NOT_YET' }) : todo)
+      }));
+    });
   }
 
   onClickDelete(id) {
@@ -114,6 +138,7 @@ class App extends Component {
             key={todo.id}
             todo={todo}
             onClickDone={() => this.onClickDone(todo.id)}
+            onClickUndone={() => this.onClickUndone(todo.id)}
             onClickDelete={() => this.onClickDelete(todo.id)}
           />
         ))}

@@ -31,4 +31,5 @@ type Query {
 
 type Mutation {
   createTodo(input: TodoWithoutID!): Todo!
+  setStatus(id: Int!, status: TodoStatus): Todo!
 }
