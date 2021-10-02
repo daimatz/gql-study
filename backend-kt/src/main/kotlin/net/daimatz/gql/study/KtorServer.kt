@@ -1,16 +1,20 @@
 
 package net.daimatz.gql.study
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.ktor.application.ApplicationCall
 import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
 
-class KtorServer {
-  private val mapper = jacksonObjectMapper()
-  private val ktorGraphQLServer = getGraphQLServer(mapper)
+interface KtorServer {
+  suspend fun handle(applicationCall: ApplicationCall)
+}
 
-  suspend fun handle(applicationCall: ApplicationCall) {
+class KtorServerImpl(
+  private val mapper: ObjectMapper,
+  private val ktorGraphQLServer: KtorGraphQLServer
+): KtorServer {
+  override suspend fun handle(applicationCall: ApplicationCall) {
     val result = ktorGraphQLServer.execute(applicationCall.request)
 
     if (result != null) {

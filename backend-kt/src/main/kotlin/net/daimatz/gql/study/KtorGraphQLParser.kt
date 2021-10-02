@@ -9,14 +9,13 @@ import io.ktor.request.receiveText
 import java.io.IOException
 
 class KtorGraphQLRequestParser(
-    private val mapper: ObjectMapper
+  private val mapper: ObjectMapper
 ) : GraphQLRequestParser<ApplicationRequest> {
-
-    @Suppress("BlockingMethodInNonBlockingContext")
-    override suspend fun parseRequest(request: ApplicationRequest): GraphQLServerRequest = try {
-        val rawRequest = request.call.receiveText()
-        mapper.readValue(rawRequest, GraphQLServerRequest::class.java)
-    } catch (e: IOException) {
-        throw IOException("Unable to parse GraphQL payload.")
-    }
+  @Suppress("BlockingMethodInNonBlockingContext")
+  override suspend fun parseRequest(request: ApplicationRequest): GraphQLServerRequest = try {
+    val rawRequest = request.call.receiveText()
+    mapper.readValue(rawRequest, GraphQLServerRequest::class.java)
+  } catch (e: IOException) {
+    throw IOException("Unable to parse GraphQL payload.")
+  }
 }
