@@ -7,14 +7,18 @@ import net.daimatz.gql.study.graphql.TodoWithoutID
 
 interface TodoService {
   fun list(): Array<Todo>
-  fun create(input: TodoWithoutID): Todo
+  fun createTodo(input: TodoWithoutID): Todo
+  fun setStatus(id: Int, status: TodoStatus): Todo
 }
 
-class TodoServiceImpl(val dba: Dba): TodoService {
+class TodoServiceImpl(val repository: TodoRepository): TodoService {
   override fun list(): Array<Todo> {
-    return arrayOf()
+    return repository.list()
   }
-  override fun create(input: TodoWithoutID): Todo {
-    return Todo(1,1,"",TodoStatus.NOT_YET)
+  override fun createTodo(input: TodoWithoutID): Todo {
+    return repository.createTodo(input)
+  }
+  override fun setStatus(id: Int, status: TodoStatus): Todo {
+    return repository.setStatus(id, status)
   }
 }

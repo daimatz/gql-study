@@ -9,13 +9,13 @@ enum class TodoStatus {
 
 data class Todo(
   val id: Int,
-  val userId: Int,
+  val user_id: Int,
   val name: String,
   val status: TodoStatus
 )
 
 data class TodoWithoutID(
-  val userId: Int,
+  val user_id: Int,
   val name: String,
   val status: TodoStatus
 )
@@ -30,5 +30,6 @@ class TodoQuery(val todoService: TodoService) {
 }
 
 class TodoMutation(val todoService: TodoService) {
-  fun create(input: TodoWithoutID): Todo = todoService.create(input)
+  fun createTodo(input: TodoWithoutID): Todo = todoService.createTodo(input)
+  fun setStatus(id: Int, status: TodoStatus): Todo = todoService.setStatus(id, status)
 }

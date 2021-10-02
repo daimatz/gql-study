@@ -3,7 +3,6 @@ package net.daimatz.gql.study
 
 import com.expediagroup.graphql.server.execution.GraphQLRequestHandler
 import com.expediagroup.graphql.server.execution.GraphQLServer
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.ktor.request.ApplicationRequest
 
 class KtorGraphQLServer(
